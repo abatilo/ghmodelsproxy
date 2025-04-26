@@ -1,7 +1,5 @@
 package conversation
 
-import "github.com/cli/go-gh/v2/pkg/api"
-
 type ChatMessageRole string
 
 const (

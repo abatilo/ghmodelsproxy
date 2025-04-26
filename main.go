@@ -13,8 +13,8 @@ import (
 	"github.com/cli/go-gh/v2/pkg/api"
 	"github.com/cli/go-gh/v2/pkg/auth"
 
-	"yourmodule/conversation"
-	"yourmodule/stream"
+	"github.com/abatilo/ghmodelsproxy/conversation"
+	"github.com/abatilo/ghmodelsproxy/stream"
 )
 
 const (
