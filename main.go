@@ -239,7 +239,7 @@ func main() {
 		return
 	}
 	reader := resp.Reader
-	defer reader.Close()
+	defer reader.Close() //ai! handle error checking here
 
 	for {
 		completion, err := reader.Read()
