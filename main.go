@@ -32,10 +32,6 @@ type AzureClientConfig struct {
 type ChatMessageRole string
 
 const (
-	// ChatMessageRoleAssistant represents a message from the model.
-	ChatMessageRoleAssistant ChatMessageRole = "assistant"
-	// ChatMessageRoleSystem represents a system message.
-	ChatMessageRoleSystem ChatMessageRole = "system"
 	// ChatMessageRoleUser represents a message from the user.
 	ChatMessageRoleUser ChatMessageRole = "user"
 )
