@@ -239,7 +239,11 @@ func main() {
 		return
 	}
 	reader := resp.Reader
-	defer reader.Close() //ai! handle error checking here with the defer
+	defer func() {
+		if err := reader.Close(); err != nil {
+			fmt.Fprintf(os.Stderr, "error closing reader: %v\n", err)
+		}
+	}()
 
 	for {
 		completion, err := reader.Read()
