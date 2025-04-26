@@ -249,8 +249,6 @@ func main() {
 	reader := resp.Reader
 	defer reader.Close()
 
-	messageBuilder := strings.Builder{}
-
 	for {
 		completion, err := reader.Read()
 		if err != nil {
@@ -261,10 +259,10 @@ func main() {
 
 		for _, choice := range completion.Choices {
 			if choice.Delta.Content != nil {
-				messageBuilder.WriteString(*choice.Delta.Content)
+				fmt.Print(*choice.Delta.Content)
 			}
 		}
 	}
 
-	fmt.Println(messageBuilder.String())
+	fmt.Println()
 }
