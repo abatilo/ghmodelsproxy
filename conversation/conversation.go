@@ -56,7 +56,3 @@ func (c *Conversation) GetMessages() []ChatMessage {
 	return messages
 }
 
-// Reset removes messages from the conversation.
-func (c *Conversation) Reset() {
-	c.Messages = nil
-}
