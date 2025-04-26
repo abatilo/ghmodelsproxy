@@ -19,7 +19,7 @@ type Reader[T any] interface {
 
 // EventReader streams events dynamically from an OpenAI endpoint.
 type EventReader[T any] struct {
-	reader  io.ReadCloser // Required for Closing
+	reader io.ReadCloser // Required for Closing
 	scanner *bufio.Scanner
 }
 
