@@ -42,33 +42,19 @@ type ChatMessage struct {
 	Role    ChatMessageRole `json:"role"`
 }
 
-// ChatCompletionOptions represents available options for a chat completion request.
 type ChatCompletionOptions struct {
-	MaxTokens   *int          `json:"max_tokens,omitempty"`
-	Messages    []ChatMessage `json:"messages"`
-	Model       string        `json:"model"`
-	Stream      bool          `json:"stream,omitempty"`
-	Temperature *float64      `json:"temperature,omitempty"`
-	TopP        *float64      `json:"top_p,omitempty"`
-}
-
-// ChatChoiceMessage is a message from a choice in a chat conversation.
-type ChatChoiceMessage struct {
-	Content *string `json:"content,omitempty"`
-	Role    *string `json:"role,omitempty"`
+	Messages []ChatMessage `json:"messages"`
+	Model    string        `json:"model"`
+	Stream   bool          `json:"stream,omitempty"`
 }
 
 type chatChoiceDelta struct {
 	Content *string `json:"content,omitempty"`
-	Role    *string `json:"role,omitempty"`
 }
 
 // ChatChoice represents a choice in a chat completion.
 type ChatChoice struct {
-	Delta        *chatChoiceDelta   `json:"delta,omitempty"`
-	FinishReason string             `json:"finish_reason"`
-	Index        int32              `json:"index"`
-	Message      *ChatChoiceMessage `json:"message,omitempty"`
+	Delta *chatChoiceDelta `json:"delta,omitempty"`
 }
 
 // ChatCompletion represents a chat completion.
