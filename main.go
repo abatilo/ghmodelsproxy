@@ -218,9 +218,9 @@ func main() {
 	clientConfig := NewDefaultAzureClientConfig()
 	client := NewAzureClient(http.DefaultClient, token, clientConfig)
 
-	conversation := conversation.Conversation{
-		systemPrompt: "You are a coding assistant",
-		messages: []ChatMessage{
+	conv := conversation.Conversation{
+		SystemPrompt: "You are a coding assistant",
+		Messages: []ChatMessage{
 			{
 				Role:    ChatMessageRoleUser,
 				Content: conversation.Ptr("How do I get the length of a string in Python?"),
@@ -229,7 +229,7 @@ func main() {
 	}
 
 	req := ChatCompletionOptions{
-		Messages: conversation.GetMessages(&conversation),
+		Messages: conv.GetMessages(),
 		Model:    "OpenAI/gpt-4.1",
 	}
 

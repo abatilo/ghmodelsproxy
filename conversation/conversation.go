@@ -14,8 +14,8 @@ type ChatMessage struct {
 }
 
 type Conversation struct {
-	messages     []ChatMessage
-	systemPrompt string
+	Messages     []ChatMessage
+	SystemPrompt string
 }
 
 // Ptr returns a pointer to the given value.
@@ -25,31 +25,31 @@ func Ptr[T any](value T) *T {
 
 // AddMessage adds a message to the conversation.
 func (c *Conversation) AddMessage(role ChatMessageRole, content string) {
-	c.messages = append(c.messages, ChatMessage{
+	c.Messages = append(c.Messages, ChatMessage{
 		Content: Ptr(content),
 		Role:    role,
 	})
 }
 
 // GetMessages returns the messages in the conversation.
-func GetMessages(c *Conversation) []ChatMessage {
-	length := len(c.messages)
-	if c.systemPrompt != "" {
+func (c *Conversation) GetMessages() []ChatMessage {
+	length := len(c.Messages)
+	if c.SystemPrompt != "" {
 		length++
 	}
 
 	messages := make([]ChatMessage, length)
 	startIndex := 0
 
-	if c.systemPrompt != "" {
+	if c.SystemPrompt != "" {
 		messages[0] = ChatMessage{
-			Content: Ptr(c.systemPrompt),
+			Content: Ptr(c.SystemPrompt),
 			Role:    ChatMessageRoleSystem,
 		}
 		startIndex++
 	}
 
-	for i, message := range c.messages {
+	for i, message := range c.Messages {
 		messages[startIndex+i] = message
 	}
 
@@ -58,5 +58,5 @@ func GetMessages(c *Conversation) []ChatMessage {
 
 // Reset removes messages from the conversation.
 func (c *Conversation) Reset() {
-	c.messages = nil
+	c.Messages = nil
 }
