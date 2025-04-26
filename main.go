@@ -5,9 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/cli/go-gh/v2/pkg/api"
@@ -214,6 +216,19 @@ func (c *AzureClient) handleHTTPError(resp *http.Response) error {
 }
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [prompt]\n", os.Args[0])
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
+	var userPrompt string
+	if flag.NArg() > 0 {
+		userPrompt = flag.Arg(0)
+	} else {
+		userPrompt = "How do I get the length of a string in Python?"
+	}
+
 	token, _ := auth.TokenForHost("github.com")
 	clientConfig := NewDefaultAzureClientConfig()
 	client := NewAzureClient(http.DefaultClient, token, clientConfig)
@@ -223,7 +238,7 @@ func main() {
 		Messages: []conversation.ChatMessage{
 			{
 				Role:    conversation.ChatMessageRoleUser,
-				Content: conversation.Ptr("How do I get the length of a string in Python?"),
+				Content: conversation.Ptr(userPrompt),
 			},
 		},
 	}
