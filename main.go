@@ -220,9 +220,9 @@ func main() {
 
 	conv := conversation.Conversation{
 		SystemPrompt: "You are a coding assistant",
-		Messages: []ChatMessage{
+		Messages: []conversation.ChatMessage{
 			{
-				Role:    ChatMessageRoleUser,
+				Role:    conversation.ChatMessageRoleUser,
 				Content: conversation.Ptr("How do I get the length of a string in Python?"),
 			},
 		},
