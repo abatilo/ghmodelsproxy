@@ -229,8 +229,16 @@ func main() {
 	}
 
 	req := ChatCompletionOptions{
-		Messages: conv.GetMessages(),
+		Messages: []ChatMessage{}, // workaround for type, will copy below
 		Model:    "OpenAI/gpt-4.1",
+	}
+	// Convert []conversation.ChatMessage to []ChatMessage
+	req.Messages = make([]ChatMessage, len(conv.GetMessages()))
+	for i, m := range conv.GetMessages() {
+		req.Messages[i] = ChatMessage{
+			Content: m.Content,
+			Role:    ChatMessageRole(m.Role),
+		}
 	}
 
 	resp, err := client.GetChatCompletionStream(context.TODO(), req)
