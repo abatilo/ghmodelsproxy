@@ -131,10 +131,19 @@ func (c *AzureClient) GetChatCompletionStream(ctx context.Context, req ChatCompl
 		return nil, err
 	}
 
-	// Print all response headers
-	fmt.Println("Response Headers:")
-	for k, v := range resp.Header {
-		fmt.Printf("%s: %s\n", k, strings.Join(v, ", "))
+	// Print only headers that start with "X-", sorted by key
+	var xHeaderKeys []string
+	for k := range resp.Header {
+		if strings.HasPrefix(strings.ToLower(k), "x-") {
+			xHeaderKeys = append(xHeaderKeys, k)
+		}
+	}
+	if len(xHeaderKeys) > 0 {
+		sort.Strings(xHeaderKeys)
+		fmt.Println("Response X-Headers:")
+		for _, k := range xHeaderKeys {
+			fmt.Printf("%s: %s\n", k, strings.Join(resp.Header[k], ", "))
+		}
 	}
 
 	if resp.StatusCode != http.StatusOK {
