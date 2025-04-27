@@ -131,6 +131,12 @@ func (c *AzureClient) GetChatCompletionStream(ctx context.Context, req ChatCompl
 		return nil, err
 	}
 
+	// Print all response headers
+	fmt.Println("Response Headers:")
+	for k, v := range resp.Header {
+		fmt.Printf("%s: %s\n", k, strings.Join(v, ", "))
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		// If we aren't going to return an SSE stream, then ensure the response body is closed.
 		defer resp.Body.Close()
