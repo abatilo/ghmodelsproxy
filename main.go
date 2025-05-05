@@ -262,6 +262,8 @@ func main() {
 	var totalTokens int
 	firstTokenTime := time.Time{} // To track when the first token is received
 
+	reader := resp.Reader // Get the reader from the response
+
 	for {
 		completion, err := reader.Read()
 		if err != nil {
