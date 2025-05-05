@@ -219,7 +219,7 @@ func main() {
 	if flag.NArg() > 0 {
 		userPrompt = flag.Arg(0)
 	} else {
-		userPrompt = "How do I get the length of a string in Python?"
+		userPrompt = "Provide a thorough explanation of what GRPO is, including its key components, benefits, and use cases."
 	}
 
 	token, _ := auth.TokenForHost("github.com")
