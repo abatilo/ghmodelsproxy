@@ -12,6 +12,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time" // Added for timing metrics
 
 	"github.com/cli/go-gh/v2/pkg/api"
 	"github.com/cli/go-gh/v2/pkg/auth"
@@ -249,17 +250,17 @@ func main() {
 		}
 	}
 
+	startTime := time.Now() // Start timing before making the request
+
 	resp, err := client.GetChatCompletionStream(context.TODO(), req)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	reader := resp.Reader
-	defer func() {
-		if err := reader.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "error closing reader: %v\n", err)
-		}
-	}()
+	defer resp.Reader.Close()
+
+	var totalTokens int
+	firstTokenTime := time.Time{} // To track when the first token is received
 
 	for {
 		completion, err := reader.Read()
@@ -271,10 +272,30 @@ func main() {
 
 		for _, choice := range completion.Choices {
 			if choice.Delta.Content != nil {
-				fmt.Print(*choice.Delta.Content)
+				content := *choice.Delta.Content
+				fmt.Print(content)
+				
+				// Count tokens (simple word count for now)
+				tokens := strings.Split(content, " ")
+				totalTokens += len(tokens)
+				
+				// Record time of first token if not already set
+				if firstTokenTime.IsZero() {
+					firstTokenTime = time.Now()
+				}
 			}
 		}
 	}
 
-	fmt.Println()
+	// Calculate metrics
+	totalDuration := time.Since(startTime)
+	timeToFirstToken := firstTokenTime.Sub(startTime)
+	tokensPerSecond := float64(totalTokens) / totalDuration.Seconds()
+
+	// Report metrics
+	fmt.Printf("\nExecution Summary:\n")
+	fmt.Printf("Total duration:          %v\n", totalDuration)
+	fmt.Printf("Time to first token:     %v\n", timeToFirstToken)
+	fmt.Printf("Total tokens received:   %d\n", totalTokens)
+	fmt.Printf("Tokens per second:       %.2f\n", tokensPerSecond)
 }
