@@ -220,7 +220,7 @@ func main() {
 	if flag.NArg() > 0 {
 		userPrompt = flag.Arg(0)
 	} else {
-		userPrompt = "Provide a thorough explanation of what GRPO is, including its key components, benefits, and use cases."
+		userPrompt = "write a python program that asks for the user's name. If the name has na odd number of letters, return the name in reverse. Else, return the name in all caps. Return the python code only with nothing else"
 	}
 
 	token, _ := auth.TokenForHost("github.com")
@@ -276,11 +276,11 @@ func main() {
 			if choice.Delta.Content != nil {
 				content := *choice.Delta.Content
 				fmt.Print(content)
-				
+
 				// Count tokens (simple word count for now)
 				tokens := strings.Split(content, " ")
 				totalTokens += len(tokens)
-				
+
 				// Record time of first token if not already set
 				if firstTokenTime.IsZero() {
 					firstTokenTime = time.Now()
