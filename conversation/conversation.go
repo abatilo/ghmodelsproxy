@@ -55,4 +55,3 @@ func (c *Conversation) GetMessages() []ChatMessage {
 
 	return messages
 }
-

@@ -84,9 +84,10 @@ func NewDefaultAzureClientConfig() *AzureClientConfig {
 
 // AzureClient provides a client for interacting with the Azure models API.
 type AzureClient struct {
-	client *http.Client
-	token  string
-	cfg    *AzureClientConfig
+	client      *http.Client
+	token       string
+	cfg         *AzureClientConfig
+	showHeaders bool
 }
 
 // NewDefaultAzureClient returns a new Azure client using the given auth token using default API URLs.
@@ -102,6 +103,12 @@ func NewDefaultAzureClient(authToken string) (*AzureClient, error) {
 // NewAzureClient returns a new Azure client using the given HTTP client, configuration, and auth token.
 func NewAzureClient(httpClient *http.Client, authToken string, cfg *AzureClientConfig) *AzureClient {
 	return &AzureClient{client: httpClient, token: authToken, cfg: cfg}
+}
+
+// WithHeaders enables or disables header printing.
+func (c *AzureClient) WithHeaders(show bool) *AzureClient {
+	c.showHeaders = show
+	return c
 }
 
 // GetChatCompletionStream returns a stream of chat completions using the given options.
@@ -133,19 +140,23 @@ func (c *AzureClient) GetChatCompletionStream(ctx context.Context, req ChatCompl
 		return nil, err
 	}
 
-	// Print only headers that start with "X-", sorted by key
-	var xHeaderKeys []string
-	for k := range resp.Header {
-		if strings.HasPrefix(strings.ToLower(k), "x-") {
-			xHeaderKeys = append(xHeaderKeys, k)
+	// Print headers if enabled
+	if c.showHeaders {
+		fmt.Fprintf(os.Stderr, "\n=== HTTP Response ===\n")
+		fmt.Fprintf(os.Stderr, "Status: %d %s\n", resp.StatusCode, resp.Status)
+
+		// Sort all header keys for consistent output
+		var headerKeys []string
+		for k := range resp.Header {
+			headerKeys = append(headerKeys, k)
 		}
-	}
-	if len(xHeaderKeys) > 0 {
-		sort.Strings(xHeaderKeys)
-		fmt.Println("Response X-Headers:")
-		for _, k := range xHeaderKeys {
-			fmt.Printf("%s: %s\n", k, strings.Join(resp.Header[k], ", "))
+		sort.Strings(headerKeys)
+
+		fmt.Fprintf(os.Stderr, "Headers:\n")
+		for _, k := range headerKeys {
+			fmt.Fprintf(os.Stderr, "  %s: %s\n", k, strings.Join(resp.Header[k], ", "))
 		}
+		fmt.Fprintf(os.Stderr, "===================\n\n")
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -210,6 +221,9 @@ func (c *AzureClient) handleHTTPError(resp *http.Response) error {
 }
 
 func main() {
+	var model = flag.String("model", "OpenAI/gpt-4.1", "Model to use for chat completion")
+	var showHeaders = flag.Bool("headers", false, "Show HTTP response headers")
+
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [prompt]\n", os.Args[0])
 		flag.PrintDefaults()
@@ -225,7 +239,7 @@ func main() {
 
 	token, _ := auth.TokenForHost("github.com")
 	clientConfig := NewDefaultAzureClientConfig()
-	client := NewAzureClient(http.DefaultClient, token, clientConfig)
+	client := NewAzureClient(http.DefaultClient, token, clientConfig).WithHeaders(*showHeaders)
 
 	conv := conversation.Conversation{
 		SystemPrompt: "You are a coding assistant",
@@ -239,7 +253,7 @@ func main() {
 
 	req := ChatCompletionOptions{
 		Messages: []ChatMessage{}, // workaround for type, will copy below
-		Model:    "OpenAI/gpt-4.1",
+		Model:    *model,
 	}
 	// Convert []conversation.ChatMessage to []ChatMessage
 	req.Messages = make([]ChatMessage, len(conv.GetMessages()))
